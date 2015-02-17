@@ -1,4 +1,4 @@
-function Viewer3D(img3d,meta)
+function viewer3D(img3d,meta)
 % Viewer3D(img3d,meta)
 %   view a 3d image
 %   img3D - 3d image
@@ -26,7 +26,14 @@ zthickness=meta.zthickness;
 f = figure('Visible','off','Position',[0,0,1200,650],'MenuBar','none');
 movegui(f,'center');
 backgroundcolor = [0.95 0.95 0.95]; %Background of figure
-set(f,'Name','Interactive 3D Viewer','Color',backgroundcolor);
+
+if isfield(meta,'name')
+    figname=sprintf('Interactive 3D Viewer:%s',meta.name);
+else
+    figname='Interactive 3D Viewer';
+end
+
+set(f,'Name',figname,'Color',backgroundcolor);
 colormap('Gray'); %Dealing only with grayscaled images (*.DCM)
 
 %Variables
@@ -80,9 +87,10 @@ function dispIm(x,y,z) %Update all three images
 end
 
 function dispAxial(z) %Update axial image
+    contrastVal=get(slide,'Value');
     set(f,'CurrentAxes',axial);
     im = double(squeeze(img3d(axvert,axhorz,z)));
-    im = imadjust(im/max(im(:)),[0 1],[0 1],2*(1-get(slide,'Value')));
+    im = imadjust(im/max(im(:)),[0 1],[0 1],2*(1-contrastVal));
     axialImage=imshow(im); axis square;
     hold on
     plot([1 P P 1 1],[1 1 Q Q 1],'b')
